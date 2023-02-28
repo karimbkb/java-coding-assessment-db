@@ -3,6 +3,7 @@ package com.kb.javacodingassessmentdb.controller;
 import com.kb.javacodingassessmentdb.service.AlgoService;
 import com.kb.javacodingassessmentdb.service.SignalProcessingService;
 import com.kb.javacodingassessmentdb.service.SignalType;
+import com.kb.javacodingassessmentdb.service.handler.DefaultSignalHandler;
 import com.kb.javacodingassessmentdb.service.handler.Signal1Handler;
 import com.kb.javacodingassessmentdb.service.handler.SignalHandler;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,11 +36,13 @@ public class SignalControllerTest {
     private MockMvc mockMvc;
 
     private Signal1Handler signal1Processor;
+    private DefaultSignalHandler defaultSignalHandler;
 
     @BeforeEach
     void beforeEach() {
         AlgoService algoService = new AlgoService();
         signal1Processor = new Signal1Handler(algoService);
+        defaultSignalHandler = new DefaultSignalHandler(algoService);
     }
 
     @Test
@@ -56,7 +59,26 @@ public class SignalControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.processed", is(true)))
-                .andExpect(jsonPath("$.signalId", is(1)));
+                .andExpect(jsonPath("$.executedHandler", is("Signal1Handler")))
+                .andExpect(jsonPath("$.requestedSignalId", is(1)));
+    }
+
+    @Test
+    void shouldProcessSignalWithDefaultHandler() throws Exception {
+        // given
+        when(signalBaseProcessors.getOrDefault("SIGNAL-99", signalBaseProcessors.get(SignalType.SIGNAL_DEFAULT_NAME)))
+                .thenReturn(defaultSignalHandler);
+
+        // when + then
+        mockMvc
+                .perform(post(SIGNAL_URL_POST)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(getStringFromResources("requests/processing-signal-with-non-existing-id.json")))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.processed", is(true)))
+                .andExpect(jsonPath("$.executedHandler", is("DefaultSignalHandler")))
+                .andExpect(jsonPath("$.requestedSignalId", is(99)));
     }
 
     @Test

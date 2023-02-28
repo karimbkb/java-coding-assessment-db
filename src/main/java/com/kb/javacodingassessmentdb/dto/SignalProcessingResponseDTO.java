@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignalProcessingResponseDTO {
+    private Integer requestedSignalId;
+    private String executedHandler;
     private Boolean processed;
-    private Integer signalId;
 }

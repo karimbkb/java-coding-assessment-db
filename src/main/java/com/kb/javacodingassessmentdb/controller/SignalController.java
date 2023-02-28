@@ -23,11 +23,7 @@ public class SignalController {
     @ResponseStatus(OK)
     public ResponseEntity<SignalProcessingResponseDTO> processSignal(@Valid @RequestBody SignalProcessingDTO signalDTO) {
         log.info("Processing signal with signalDTO [{}]", signalDTO);
-        signalService.processSignal(signalDTO);
-        SignalProcessingResponseDTO responseDTO = SignalProcessingResponseDTO.builder()
-                .signalId(signalDTO.getSignalId())
-                .processed(true)
-                .build();
-        return ResponseEntity.ok(responseDTO);
+        SignalProcessingResponseDTO signalProcessingResponseDTO = signalService.processSignal(signalDTO);
+        return ResponseEntity.ok(signalProcessingResponseDTO);
     }
 }

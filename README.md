@@ -48,7 +48,7 @@ It will build the app with maven and start the application on port 8080
 
 | Action           | Endpoint          | Type     | Example                                          | Payload                                                                                                                                                |
 |------------------|-------------------|----------|--------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Process a Signal | `/api/v1/signal/` | `POST`   | `/api/v1/signal/` | `{ "signalId": 1 }`                                                                                                                                    |
+| Process a Signal | `/api/v1/signal/processSignal` | `POST`   | `/api/v1/signal/processSignal` | `{ "signalId": 1 }`                                                                                                                                    |
 
 
 ## Unit Tests/Integration tests

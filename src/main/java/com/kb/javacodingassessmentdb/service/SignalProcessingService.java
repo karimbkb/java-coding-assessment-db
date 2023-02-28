@@ -1,6 +1,7 @@
 package com.kb.javacodingassessmentdb.service;
 
 import com.kb.javacodingassessmentdb.dto.SignalProcessingDTO;
+import com.kb.javacodingassessmentdb.dto.SignalProcessingResponseDTO;
 import com.kb.javacodingassessmentdb.exception.InvalidSignalIdException;
 import com.kb.javacodingassessmentdb.service.handler.SignalHandler;
 import lombok.NonNull;
@@ -18,7 +19,7 @@ import static com.kb.javacodingassessmentdb.util.SignalProcessingUtil.buildSigna
 public class SignalProcessingService {
     private final Map<String, SignalHandler> signalHandlers;
 
-    public void processSignal(@NonNull SignalProcessingDTO signalDTO) {
+    public SignalProcessingResponseDTO processSignal(@NonNull SignalProcessingDTO signalDTO) {
         if (signalDTO.getSignalId() == null || signalDTO.getSignalId() <= 0) {
             throw new InvalidSignalIdException("The signalId cannot be null and must be greater than 0.");
         }
@@ -26,7 +27,13 @@ public class SignalProcessingService {
         log.debug("The following serviceName was requested [{}]", serviceName);
 
         final SignalHandler signalHandler = signalHandlers.getOrDefault(serviceName, signalHandlers.get(SignalType.SIGNAL_DEFAULT_NAME));
-        log.info("The following signalHandler will be used: [{}]", signalHandler);
+        log.info("The following signalHandler will be used: [{}]", signalHandler.getClass());
         signalHandler.handleSignal(signalDTO.getSignalId());
+
+        return SignalProcessingResponseDTO.builder()
+                .requestedSignalId(signalDTO.getSignalId())
+                .executedHandler(signalHandler.getClass().getSimpleName())
+                .processed(true)
+                .build();
     }
 }
