@@ -7,7 +7,7 @@
 - [Setup](#setup)
 - [Dependencies](#dependencies)
 - [Endpoints](#endpoints)
-- [Unit Tests](#unit-tests)
+- [Unit Tests](#unit-testsintegration-tests)
 
 ## Description
 
@@ -51,9 +51,9 @@ It will build the app with maven and start the application on port 8080
 | Process a Signal | `/api/v1/signal/` | `POST`   | `/api/v1/signal/` | `{ "signalId": 1 }`                                                                                                                                    |
 
 
-## Unit Tests
+## Unit Tests/Integration tests
 
-To execute Unit Tests run:
+To execute Unit Tests/Integration Tests run:
 
 ```
 mvn test

@@ -5,6 +5,7 @@ import com.kb.javacodingassessmentdb.service.SignalProcessingService;
 import com.kb.javacodingassessmentdb.service.SignalType;
 import com.kb.javacodingassessmentdb.service.handler.Signal1Handler;
 import com.kb.javacodingassessmentdb.service.handler.SignalHandler;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -16,9 +17,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Map;
 
 import static com.kb.javacodingassessmentdb.test.util.TestDataUtil.getStringFromResources;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(SignalController.class)
 @Import({SignalProcessingService.class})
@@ -26,14 +28,19 @@ public class SignalControllerTest {
 
     private final String SIGNAL_URL_POST = "/api/v1/signal/processSignal";
 
-    AlgoService algoService = new AlgoService();
-    Signal1Handler signal1Processor = new Signal1Handler(algoService);
-
     @MockBean
     Map<String, SignalHandler> signalBaseProcessors;
 
     @Autowired
     private MockMvc mockMvc;
+
+    private Signal1Handler signal1Processor;
+
+    @BeforeEach
+    void beforeEach() {
+        AlgoService algoService = new AlgoService();
+        signal1Processor = new Signal1Handler(algoService);
+    }
 
     @Test
     void shouldProcessSignal() throws Exception {
@@ -46,7 +53,10 @@ public class SignalControllerTest {
                 .perform(post(SIGNAL_URL_POST)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getStringFromResources("requests/processing-signal.json")))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.processed", is(true)))
+                .andExpect(jsonPath("$.signalId", is(1)));
     }
 
     @Test
